@@ -54,24 +54,18 @@ public class Test1
     }
 
     [Test]
+    //teste usando PATCH
     public void UpdateUsuarioPatch()
     {
-        
-        string paramentro = @"{
-                           ""name"": ""Jarbas"",
-                          ""job"": ""zion resident""
-                                               }";
-        
+        string json = @"{""name"": ""morpheus"",""job"":""zion resident""}";
         var client = new RestClient("https://reqres.in/");        
         var request = new RestRequest("api/users/{id}", Method.PATCH);        
-        request.AddUrlSegment("id", 2);        
-        request.AddJsonBody(paramentro);        
-        var conteudo = client.Execute(request);        
-        UpDateUser up = SimpleJson.DeserializeObject<UpDateUser>(conteudo.Content);       
-        Assert.AreEqual("Jarbas", up.name);
-        Assert.AreEqual("zion resident", up.job);
-        
-        Assert.AreEqual(HttpStatusCode.OK, conteudo.StatusCode);
+        request.AddUrlSegment("id", 2);
+        request.AddJsonBody(json);
+        var response = client.Execute<UpDateUser>(request);             
+        Assert.AreEqual("morpheus", response.Data.name);
+        Assert.AreEqual("zion resident", response.Data.job);
+        Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 
     }
 
@@ -103,24 +97,19 @@ public class Test1
     {
         var client = new RestClient("https://reqres.in/");
         var request = new RestRequest("/api/unknown", Method.GET);
-        var conteudo = client.Execute(request);
-        ListaUsuario json = SimpleJson.DeserializeObject<ListaUsuario>(conteudo.Content);
-        Assert.AreEqual("cerulean", json.data[0].name);
+        var response = client.Execute<ListaUsuario>(request);
+      
+        Assert.AreEqual("cerulean", response.Data.data[0].name);
     }
     [Test]
     public void LoginFalho()
     {
-
-        string json = @"{
-    ""email"": ""peter @klaven""
-}";
-
+        string objt = @"{""email"": ""peter @klaven"" }";
         var cliente = new RestClient("https://reqres.in/");
         var request = new RestRequest("api/login", Method.POST);
-        request.AddParameter("application/json", json, ParameterType.RequestBody);
-        var conteudo = cliente.Execute(request);
-        JObject obs = JObject.Parse(conteudo.Content);
-        Assert.That(obs["error"].ToString(), Is.EqualTo("Missing password"), "Algo Relevante");
+        request.AddJsonBody(objt);
+        var response = cliente.Execute<LoginFalho>(request);      
+        Assert.That(response.Data.error, Is.EqualTo("Missing password"), "Algo Relevante");
 
     }
     [Test]
@@ -130,8 +119,7 @@ public class Test1
         var request = new RestRequest("/api/unknown/{id}", Method.GET);
         request.AddUrlSegment("id", 23);
         var response = client.Execute(request);
-        JObject json = JObject.Parse(response.Content);
-        Console.WriteLine(json);
+        JObject json = JObject.Parse(response.Content);      
         Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
         Assert.AreEqual("{}", json.ToString());
 

@@ -95,10 +95,10 @@ public class Test1
     [Test]
     public void ListarUsuario()
     {
+        //Comentario Extra de teste
         var client = new RestClient("https://reqres.in/");
         var request = new RestRequest("/api/unknown", Method.GET);
-        var response = client.Execute<ListaUsuario>(request);
-      
+        var response = client.Execute<ListaUsuario>(request);      
         Assert.AreEqual("cerulean", response.Data.data[0].name);
     }
     [Test]

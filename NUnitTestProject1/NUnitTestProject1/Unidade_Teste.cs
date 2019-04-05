@@ -104,6 +104,7 @@ public class Test1
     [Test]
     public void LoginFalho()
     {
+        
         string objt = @"{""email"": ""peter @klaven"" }";
         var cliente = new RestClient("https://reqres.in/");
         var request = new RestRequest("api/login", Method.POST);
@@ -124,6 +125,15 @@ public class Test1
         Assert.AreEqual("{}", json.ToString());
 
 
+    }
+    [Test]
+    public void Delayed()
+    {
+        var client = new RestClient("https://reqres.in/");
+        var request = new RestRequest("api/users?delay=3", Method.GET);
+        var response = client.Execute<DelayedResponse>(request);
+        Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+        Assert.AreEqual("George", response.Data.data[0].first_name);
     }
 
 
